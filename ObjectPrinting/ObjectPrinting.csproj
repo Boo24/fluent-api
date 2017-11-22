@@ -30,13 +30,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentAssertions, Version=4.14.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentAssertions.4.14.0\lib\net45\FluentAssertions.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="FluentAssertions, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentAssertions.4.19.4\lib\net45\FluentAssertions.dll</HintPath>
     </Reference>
-    <Reference Include="FluentAssertions.Core, Version=4.14.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentAssertions.4.14.0\lib\net45\FluentAssertions.Core.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="FluentAssertions.Core, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentAssertions.4.19.4\lib\net45\FluentAssertions.Core.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
@@ -51,15 +49,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="INumber.cs" />
+    <Compile Include="IPrintingConfig.cs" />
     <Compile Include="ObjectPrinter.cs" />
     <Compile Include="PrintingConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertySerializer.cs" />
-    <Compile Include="SerializeConfig.cs" />
-    <Compile Include="StringSerializer.cs" />
+    <Compile Include="PropertyConfig.cs" />
     <Compile Include="Tests\ObjectPrinterAcceptanceTests.cs" />
     <Compile Include="Tests\Person.cs" />
+    <Compile Include="TypeConfig.cs" />
+    <Compile Include="Extensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
