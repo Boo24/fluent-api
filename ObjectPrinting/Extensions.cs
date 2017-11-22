@@ -20,6 +20,10 @@ namespace ObjectPrinting
             var printer = ObjectPrinter.For<T>();
             return printer.PrintToString(obj);
         }
+
+        public static string PrintToString<T>(this T obj, Func<PrintingConfig<T>, PrintingConfig<T>> func) =>
+            func(ObjectPrinter.For<T>()).PrintToString(obj);
+
     }
 
 }
