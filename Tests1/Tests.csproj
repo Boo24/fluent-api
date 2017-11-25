@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{07B8C9B7-8289-46CB-9875-048A57758EEE}</ProjectGuid>
+    <ProjectGuid>{5D0CE775-123A-44F9-8AB0-17152B921438}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ObjectPrinting</RootNamespace>
-    <AssemblyName>ObjectPrinting</AssemblyName>
+    <RootNamespace>Tests1</RootNamespace>
+    <AssemblyName>Tests1</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -49,25 +49,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IPrintingConfig.cs" />
-    <Compile Include="ObjectPrinter.cs" />
-    <Compile Include="PrintingConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyConfig.cs" />
-    <Compile Include="TypeConfig.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="ObjectForConfigSelector.cs" />
+    <Compile Include="ObjectPtintingTests\ObjectPrinterAcceptanceTests.cs" />
+    <Compile Include="ObjectPtintingTests\Person.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\ObjectPrinting\ObjectPrinting.csproj">
+      <Project>{07B8C9B7-8289-46CB-9875-048A57758EEE}</Project>
+      <Name>ObjectPrinting</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

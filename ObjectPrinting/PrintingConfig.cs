@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -22,19 +23,17 @@ namespace ObjectPrinting
             excludeTypes.Add(typeof(T));
             return this;
         }
-        public PrintingConfig<TOwner> SetPropertySerialization(Func<PropertySerializationConfig<TOwner>, PrintingConfig<TOwner>> propertySelector) 
-            => propertySelector(new PropertySerializationConfig<TOwner>(this));
-        public PrintingConfig<TOwner> SetTypeSerialization(Func<TypeSerializationConfig<TOwner>, PrintingConfig<TOwner>> typeSelector)
-            => typeSelector(new TypeSerializationConfig<TOwner>(this));
+        public PrintingConfig<TOwner> SetPropertySerialization(Func<ObjectForConfigSelector<TOwner>, PrintingConfig<TOwner>> propertySelector) 
+            => propertySelector(new ObjectForConfigSelector<TOwner>(this));
+        public PrintingConfig<TOwner> SetTypeSerialization(Func<ObjectForConfigSelector<TOwner>, PrintingConfig<TOwner>> typeSelector)
+            => typeSelector(new ObjectForConfigSelector<TOwner>(this));
         public PrintingConfig<TOwner> ExcludeProperty<TPropType>(Expression<Func<TOwner, TPropType>> func)
         {
-            try
-            {
-                var propInfo = (PropertyInfo) ((MemberExpression) func.Body).Member;
+            if ((func.Body as MemberExpression)?.Member as PropertyInfo is null)
+                throw new ArgumentException("There must be a property of the configurable type");
+            var propInfo = (PropertyInfo) ((MemberExpression) func.Body).Member;
                 excludeProperties.Add(propInfo);
                 return this;
-            }
-            catch (InvalidCastException) { throw new ArgumentException();}
         }
         Dictionary<Type, Func<object, string>> IPrintingConfig.TypeSerialize => typeSerialize;
         Dictionary<Type, Func<object, string>> IPrintingConfig.SerializeWithCulture => cultureInfo;
@@ -55,18 +54,31 @@ namespace ObjectPrinting
             foreach (var propertyInfo in type.GetProperties())
             {
                 var formatStringStart = identation + propertyInfo.Name + " = ";
-                if (excludeProperties.Contains(propertyInfo) ||
-                    excludeTypes.Contains(propertyInfo.PropertyType)) continue;
-                if (CheckSpecialSettingsForProperty(propertyInfo, sb, nestingLevel, obj) ||
-                    CheckSpecialSettingsForType(propertyInfo, sb, nestingLevel, obj))
+                if (CheckSpecialSettings(propertyInfo, sb, nestingLevel, obj))
                     continue;
                 sb.Append(formatStringStart + PrintToString(propertyInfo.GetValue(obj), nestingLevel + 1));
             }
             return sb.ToString();
         }
-
-        private bool CheckSpecialSettingsForProperty(PropertyInfo propInfo, StringBuilder sb, int nestingLvl,
-            object obj)
+        private bool CheckSpecialSettings(PropertyInfo propertyInfo, StringBuilder sb, int nestingLevel, object obj)
+        {
+            if (excludeProperties.Contains(propertyInfo) ||
+                excludeTypes.Contains(propertyInfo.PropertyType) ||
+                CheckSpecialSettingsForProperty(propertyInfo, sb, nestingLevel, obj) ||
+                CheckSpecialSettingsForType(propertyInfo, sb, nestingLevel, obj))
+                return true;
+            var propValue = propertyInfo.GetValue(obj);
+            if (!(propValue is ICollection)) return false;
+            sb.Append($"{new string('\t', nestingLevel + 1)}{propertyInfo.Name} = ");
+            PrintCollection((ICollection)propValue, nestingLevel, sb);
+            return true;
+        }
+        private void PrintCollection<T>(T obj, int nestingLevel, StringBuilder sb) where T: ICollection
+        {
+            foreach (var elem in obj)
+                sb.Append(PrintToString(elem, nestingLevel));
+        }
+        private bool CheckSpecialSettingsForProperty(PropertyInfo propInfo, StringBuilder sb, int nestingLvl, object obj)
         {
             var propValue = propInfo.GetValue(obj);
             if (propertySerialize.ContainsKey(propInfo))
@@ -78,7 +90,6 @@ namespace ObjectPrinting
             sb.Append(FormStringForProperty(nestingLvl, propInfo, TrimString(propValue, cutSymblosCount[propInfo])));
             return true;
         }
-
         private bool CheckSpecialSettingsForType(PropertyInfo propInfo, StringBuilder sb, int nestingLvl, object obj)
         {
             var propValue = propInfo.GetValue(obj);
@@ -92,7 +103,6 @@ namespace ObjectPrinting
             sb.Append(FormStringForProperty(nestingLvl, propInfo, ApplyCultureInfo(propInfo, obj)));
             return true;
         }
-
         private string ApplyCultureInfo(PropertyInfo propertyInfo, object obj) =>
             cultureInfo[propertyInfo.PropertyType](propertyInfo.GetValue(obj));
         private string TrimString(object objValue, int len) => objValue.ToString().Substring(0, len);

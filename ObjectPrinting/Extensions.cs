@@ -5,7 +5,6 @@ namespace ObjectPrinting
 {
     public static class Extensions
     {
-
         public static PrintingConfig<TOwner> Cut<TOwner>(this PropertyConfig<TOwner, string> propertyConfig, int length)
         {
             var propInfo = ((IPropertyConfig)propertyConfig).PropInfo;
