@@ -15,6 +15,7 @@ namespace ObjectPrinting.Tests
 	    [Test]
 	    public void StringWithoutIntProperties_WhenExcludeIntType()
 	    {
+
 	        var printer = ObjectPrinter.For<Person>().ExcludeType<int>();
             var actualResult = printer.PrintToString(person);
 	        var expectedResult = "Person\r\n	Id = Guid\r\n	Name = Alex\r\n	Height = 0\r\n";
