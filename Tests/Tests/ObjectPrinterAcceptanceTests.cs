@@ -10,7 +10,7 @@ namespace ObjectPrinting.Tests
 	    private Person person;
 
 	    [SetUp]
-	    public void SetUp() => person = new Person { Name = "Alex", Age = 19, Parent = new Person(){Name = "qwer"}};
+	    public void SetUp() => person = new Person { Name = "Alex", Age = 19};
 
 	    [Test]
 	    public void StringWithoutIntProperties_WhenExcludeIntType()
