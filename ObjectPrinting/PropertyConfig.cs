@@ -1,32 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ObjectPrinting
 {
-    public class PropertyConfig<TOwner, TType> : ITypeConfig<TOwner, TType>, IPropertyConfig<TOwner>
+    public class PropertyConfig<TOwner, TPropType> : ITypeConfig<TOwner>, IPropertyConfig
     {
         private PrintingConfig<TOwner> printingConfig;
         private PropertyInfo propInfo;
-        PrintingConfig<TOwner> ITypeConfig<TOwner, TType>.ParentConfig => printingConfig;
-        PropertyInfo IPropertyConfig<TOwner>.PropInfo => propInfo;
+        PrintingConfig<TOwner> ITypeConfig<TOwner>.ParentConfig => printingConfig;
+        PropertyInfo IPropertyConfig.PropInfo => propInfo;
+
         public PropertyConfig(PrintingConfig<TOwner> config, PropertyInfo info)
         {
             printingConfig = config;
             propInfo = info;
         }
-        public PrintingConfig<TOwner> Using(Func<TType, string> func)
+        public PrintingConfig<TOwner> Use(Func<TPropType, string> propertySelector)
         {
-            ((IPrintingConfig) printingConfig).PropertySerialize[propInfo] = f => func((TType)f);
+            ((IPrintingConfig)printingConfig).PropertySerialize[propInfo] = f => propertySelector((TPropType)f);
             return printingConfig;
         }
-    }
 
-    public interface IPropertyConfig<TOwner>
+    }
+    public interface IPropertyConfig
     {
         PropertyInfo PropInfo { get; }
     }
