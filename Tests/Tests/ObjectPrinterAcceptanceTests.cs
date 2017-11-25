@@ -1,7 +1,4 @@
-﻿using System.Drawing;
-using System.Globalization;
-using System.Reflection;
-using System.Runtime.InteropServices.ComTypes;
+﻿using System.Globalization;
 using FluentAssertions;
 using NUnit.Framework;
 
