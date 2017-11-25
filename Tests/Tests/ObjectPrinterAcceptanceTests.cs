@@ -10,13 +10,11 @@ namespace ObjectPrinting.Tests
 	    private Person person;
 
 	    [SetUp]
-	    public void SetUp() => person = new Person { Name = "Alex", Age = 19 };
+	    public void SetUp() => person = new Person { Name = "Alex", Age = 19, Parent = new Person(){Name = "qwer"}};
 
 	    [Test]
 	    public void StringWithoutIntProperties_WhenExcludeIntType()
 	    {
-	        var a = 1;
-	        var b = person.GetType().IsValueType;
 	        var printer = ObjectPrinter.For<Person>().ExcludeType<int>();
             var actualResult = printer.PrintToString(person);
 	        var expectedResult = "Person\r\n	Id = Guid\r\n	Name = Alex\r\n	Height = 0\r\n";
