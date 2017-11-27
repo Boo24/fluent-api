@@ -23,7 +23,6 @@ namespace ObjectPrinting
             ((IPrintingConfig)((ITypeConfig<TOwner>)typeConfig).ParentConfig).SerializeWithCulture[typeof(double)] = f => func((double)f);
             return ((ITypeConfig<TOwner>)typeConfig).ParentConfig;
         }
-
         public static string PrintToString<T>(this T obj)
         {
             var printer = ObjectPrinter.For<T>();

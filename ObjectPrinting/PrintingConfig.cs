@@ -46,11 +46,13 @@ namespace ObjectPrinting
             if (obj == null)
                 return "null" + Environment.NewLine;
             if (notConfigurableTypes.Contains(obj.GetType()))
-               return obj + Environment.NewLine;
-            var identation = new string('\t', nestingLevel + 1);
-            var sb = new StringBuilder();
+                return PrintNotConfigurableType(obj);
+            var sb = new StringBuilder(); 
             var type = obj.GetType();
+            if (obj is IEnumerable)
+                return HandleCollection(obj, nestingLevel, sb);
             sb.AppendLine(type.Name);
+            var identation = new string('\t', nestingLevel + 1);
             foreach (var propertyInfo in type.GetProperties())
             {
                 var formatStringStart = identation + propertyInfo.Name + " = ";
@@ -60,23 +62,36 @@ namespace ObjectPrinting
             }
             return sb.ToString();
         }
+
+        private string PrintNotConfigurableType(object obj)
+        {
+            var objType = obj.GetType();
+            if (typeSerialize.ContainsKey(objType))
+                return typeSerialize[objType](obj);
+            if (cultureInfo.ContainsKey(objType))
+                return cultureInfo[objType](obj);
+            return obj + Environment.NewLine;
+        }
+
+        private string HandleCollection(object obj, int nestingLevel, StringBuilder sb)
+        {
+            sb.Append($"{new string('\t', nestingLevel)}{obj.GetType().Name}");
+            HandleCollection((IEnumerable) obj, nestingLevel + 1, sb);
+            return sb.ToString();
+        }
+
         private bool CheckSpecialSettings(PropertyInfo propertyInfo, StringBuilder sb, int nestingLevel, object obj)
         {
-            if (excludeProperties.Contains(propertyInfo) ||
-                excludeTypes.Contains(propertyInfo.PropertyType) ||
-                CheckSpecialSettingsForProperty(propertyInfo, sb, nestingLevel, obj) ||
-                CheckSpecialSettingsForType(propertyInfo, sb, nestingLevel, obj))
-                return true;
-            var propValue = propertyInfo.GetValue(obj);
-            if (!(propValue is ICollection)) return false;
-            sb.Append($"{new string('\t', nestingLevel + 1)}{propertyInfo.Name} = ");
-            PrintCollection((ICollection)propValue, nestingLevel, sb);
-            return true;
+            return excludeProperties.Contains(propertyInfo) ||
+                   excludeTypes.Contains(propertyInfo.PropertyType) ||
+                   CheckSpecialSettingsForProperty(propertyInfo, sb, nestingLevel, obj) ||
+                   CheckSpecialSettingsForType(propertyInfo, sb, nestingLevel, obj);
         }
-        private void PrintCollection<T>(T obj, int nestingLevel, StringBuilder sb) where T: ICollection
+        private void HandleCollection<T>(T obj, int nestingLevel, StringBuilder sb) where T: IEnumerable
         {
             foreach (var elem in obj)
-                sb.Append(PrintToString(elem, nestingLevel));
+                if(!excludeTypes.Contains(elem.GetType()))
+                    sb.Append(new string('\t', nestingLevel) + PrintToString(elem, nestingLevel));
         }
         private bool CheckSpecialSettingsForProperty(PropertyInfo propInfo, StringBuilder sb, int nestingLvl, object obj)
         {
